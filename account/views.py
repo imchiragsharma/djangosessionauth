@@ -35,3 +35,26 @@ class RegistrationView(APIView):
 class ActivateView(APIView):
     permission_classes = [AllowAny]
 
+class ActivationConfirm(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        uid = request.data.get('uid')
+        token = request.data.get('token')
+        if not uid or not token:
+            return Response({'detail': 'Missing uid or token.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            uid = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+            if default_token_generator.check_token(user, token):
+                if user.is_active:
+                    return Response({'detail': 'Account is already activated.'}, status=status.HTTP_200_OK)
+ 
+                user.is_active = True
+                user.save()
+                return Response({'detail': 'Account activated successfully.'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': 'Invalid activation link.'}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({'detail': 'Invalid activation link.'}, status=status.HTTP_400_BAD_REQUEST)
+
