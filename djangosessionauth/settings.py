@@ -145,5 +145,19 @@ AUTH_USER_MODEL = 'account.User'
 SITE_DOMAIN = "http://localhost:8000"
 SITE_NAME = "Local Host"
 
+REST_FRAMEWORK = {
+    # Enable Session Authentication for App
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    # Enable IsAuthenticated Permission
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    # Disable Browsable API and Render JSON
+    # 'DEFAULT_RENDERER_CLASSES':('rest_framework.renderers.JSONRenderer',),
+}
+
+
 
 

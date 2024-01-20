@@ -14,6 +14,15 @@ from django.utils.decorators import method_decorator
 from django.conf import settings
 from account.utils import send_activation_email
 
+
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class GetCSRFToken(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        return Response({'sucess':'CSRF Cookie Set'})
+
+
+@method_decorator(csrf_protect, name='dispatch')
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
@@ -32,9 +41,11 @@ class RegistrationView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(csrf_protect, name='dispatch')
 class ActivateView(APIView):
     permission_classes = [AllowAny]
 
+@method_decorator(csrf_protect, name='dispatch')
 class ActivationConfirm(APIView):
     permission_classes = [AllowAny]
 
