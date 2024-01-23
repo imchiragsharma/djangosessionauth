@@ -69,3 +69,26 @@ class ActivationConfirm(APIView):
         except User.DoesNotExist:
             return Response({'detail': 'Invalid activation link.'}, status=status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(csrf_protect, name='dispatch')
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = authenticate(request, email=email, password=password)
+     
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return Response({'detail':'Logged in successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Email or Password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class LogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({'detail':'Logged Out Successfully.'}, status=status.HTTP_200_OK)
+    
+
